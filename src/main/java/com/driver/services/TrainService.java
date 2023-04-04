@@ -28,7 +28,7 @@ public class TrainService {
         String route = trainEntryDto.getStationRoute().get(0).toString();
         for(Station station: trainEntryDto.getStationRoute()){
             if (route.equals(station.toString())) continue;
-            route = route + "," + station.toString();
+            route = route + "," + station;
         }
         Train train = new Train();
         train.setRoute(route);

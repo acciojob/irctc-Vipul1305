@@ -62,15 +62,16 @@ public class TicketService {
                passTo = true;
            }
        }
-       if (!passForm && !passTo){
+       if (!passForm || !passTo){
            throw new Exception("Invalid stations");
        }
 
-       //Check Seat Availability
-//       Integer availableSeat =  trainService.calculateAvailableSeats
-//               (new SeatAvailabilityEntryDto(train.getTrainId(),bookTicketEntryDto.getFromStation(),
-//                       bookTicketEntryDto.getToStation()));
-       if(train.getNoOfSeats()<bookTicketEntryDto.getNoOfSeats()){
+       int bookedSeats = 0;
+       List<Ticket> booked = train.getBookedTickets();
+       for(Ticket ticket : booked){
+           bookedSeats += ticket.getPassengersList().size();
+       }
+       if(train.getNoOfSeats()<bookTicketEntryDto.getNoOfSeats()+bookedSeats){
            throw new Exception("Less tickets are available");
        }
 
@@ -98,7 +99,7 @@ public class TicketService {
                totalStationBtw++;
            }
        }
-       ticket.setTotalFare(totalStationBtw*300);
+       ticket.setTotalFare(totalStationBtw*300*bookTicketEntryDto.getNoOfSeats());
 
        train.getBookedTickets().add(ticket);
        //# set no of set in train#;
