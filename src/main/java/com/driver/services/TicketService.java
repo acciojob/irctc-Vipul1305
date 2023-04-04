@@ -101,7 +101,7 @@ public class TicketService {
        ticket.setTotalFare(totalStationBtw*300);
 
        train.getBookedTickets().add(ticket);
-       //# set no of set in train##;
+       //# set no of set in train#;
 
         //Save ticket in passenger who booked the ticket;
         Passenger bookingPerson = passengerRepository.findById(bookTicketEntryDto.getBookingPersonId()).get();
