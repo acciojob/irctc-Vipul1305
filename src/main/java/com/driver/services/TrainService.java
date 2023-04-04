@@ -28,14 +28,13 @@ public class TrainService {
         String route = trainEntryDto.getStationRoute().get(0).toString();
         for(Station station: trainEntryDto.getStationRoute()){
             if (route.equals(station.toString())) continue;
-            route = route + "," + station;
+            route = route + "," + station.toString();
         }
         Train train = new Train();
         train.setRoute(route);
         train.setDepartureTime(trainEntryDto.getDepartureTime());
         train.setNoOfSeats(trainEntryDto.getNoOfSeats());
-        trainRepository.save(train);
-        return train.getTrainId();
+        return trainRepository.save(train).getTrainId();
     }
 
     public Integer calculateAvailableSeats(SeatAvailabilityEntryDto seatAvailabilityEntryDto) {
