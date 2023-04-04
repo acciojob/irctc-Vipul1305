@@ -10,7 +10,6 @@ import com.driver.model.Train;
 import com.driver.repository.PassengerRepository;
 import com.driver.repository.TicketRepository;
 import com.driver.repository.TrainRepository;
-import org.dom4j.tree.BackedList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -68,10 +67,10 @@ public class TicketService {
        }
 
        //Check Seat Availability
-       Integer availableSeat =  trainService.calculateAvailableSeats
-               (new SeatAvailabilityEntryDto(train.getTrainId(),bookTicketEntryDto.getFromStation(),
-                       bookTicketEntryDto.getToStation()));
-       if(availableSeat<bookTicketEntryDto.getNoOfSeats()){
+//       Integer availableSeat =  trainService.calculateAvailableSeats
+//               (new SeatAvailabilityEntryDto(train.getTrainId(),bookTicketEntryDto.getFromStation(),
+//                       bookTicketEntryDto.getToStation()));
+       if(train.getNoOfSeats()<bookTicketEntryDto.getNoOfSeats()){
            throw new Exception("Less tickets are available");
        }
 
@@ -108,7 +107,7 @@ public class TicketService {
         Passenger bookingPerson = passengerRepository.findById(bookTicketEntryDto.getBookingPersonId()).get();
         bookingPerson.getBookedTickets().add(ticket);
 
-        trainRepository.save(train);
+        ticketRepository.save(ticket);
 
         return ticket.getTicketId();
     }
