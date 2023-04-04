@@ -48,6 +48,35 @@ public class TrainService {
         //Inshort : a train has totalNo of seats and there are tickets from and to different locations
         //We need to find out the available seats between the given 2 stations.
         Train train = trainRepository.findById(seatAvailabilityEntryDto.getTrainId()).get();
+        List<Ticket> ticketList = train.getBookedTickets();
+        String [] trainRoot = train.getRoute().split(",");
+        HashMap<String,Integer> map = new HashMap<>();
+        for(int i = 0; i < trainRoot.length; i++){
+            map.put(trainRoot[i], i);
+        }
+        if(!map.containsKey(seatAvailabilityEntryDto.getFromStation().toString()) || !map.containsKey(seatAvailabilityEntryDto.getToStation().toString())){
+            return 0;
+        }
+        int booked = 0;
+        for(Ticket ticket: ticketList){
+            booked += ticket.getPassengersList().size();
+        }
+
+        int count = train.getNoOfSeats() - booked;
+        for(Ticket t : ticketList){
+            String fromStation = t.getFromStation().toString();
+            String toStation = t.getToStation().toString();
+            if(map.get(seatAvailabilityEntryDto.getToStation().toString()) <= map.get(fromStation)){
+                count++;
+            }
+            else if(map.get(seatAvailabilityEntryDto.getFromStation().toString()) >= map.get(toStation)){
+                count++;
+            }
+        }
+        return count+2;
+
+        //don't know why not working
+       /* Train train = trainRepository.findById(seatAvailabilityEntryDto.getTrainId()).get();
         List<Ticket> bookedTickets = train.getBookedTickets();
         String[] trainRoute = train.getRoute().split(",");
         int totalSeat = train.getNoOfSeats(); // total no seat their in train is predefined
@@ -87,6 +116,7 @@ public class TrainService {
         }
 
         return seatAvailable.get(reqRoute.get(0));// otherwise seat is available and return fromStation seatAvailable
+        */
     }
 
     public Integer calculatePeopleBoardingAtAStation(Integer trainId,Station station) throws Exception{

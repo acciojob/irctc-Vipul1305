@@ -50,21 +50,25 @@ public class TicketService {
        Train train = trainRepository.findById(bookTicketEntryDto.getTrainId()).get();
 
        //check if station are valid or not;
-       String []trainRoute = train.getRoute().split(",");
-       Station from = bookTicketEntryDto.getFromStation();
-       Station to = bookTicketEntryDto.getToStation();
-       boolean passForm = false, passTo = false;
-       for(String route: trainRoute){
-           if (route.equals(from.toString())){
-               passForm = true;
-           }
-           if (route.equals(to.toString())) {
-               passTo = true;
-           }
-       }
-       if (!passForm || !passTo){
-           throw new Exception("Invalid stations");
-       }
+        String []trainRoute = train.getRoute().split(",");
+        int start=-1;
+        int end=-1;
+        for(int i = 0; i < trainRoute.length; i++){
+            if(bookTicketEntryDto.getFromStation().toString().equals(trainRoute[i])){
+                start=i;
+                break;
+            }
+        }
+        for(int i = 0; i < trainRoute.length; i++){
+            if(bookTicketEntryDto.getToStation().toString().equals(trainRoute[i])){
+                end = i;
+                break;
+            }
+        }
+        if(start==-1 || end ==-1 || end-start<0){
+            throw new Exception("Invalid stations");
+        }
+
 
        int bookedSeats = 0;
        List<Ticket> booked = train.getBookedTickets();
@@ -75,6 +79,7 @@ public class TicketService {
            throw new Exception("Less tickets are available");
        }
 
+       //make ticket
        Ticket ticket = new Ticket();
        List<Passenger> passengerList = new ArrayList<>();
        for (Integer passengerId: bookTicketEntryDto.getPassengerIds()){
@@ -85,21 +90,7 @@ public class TicketService {
        ticket.setFromStation(bookTicketEntryDto.getFromStation());
        ticket.setToStation(bookTicketEntryDto.getToStation());
 
-       //cal fare btw station;  fixed 300
-       int totalStationBtw = 0;
-       boolean count = false;
-       for (String route: trainRoute){
-           if(route.equals(bookTicketEntryDto.getFromStation().toString())){
-               count = true;
-           }
-           if(route.equals(bookTicketEntryDto.getToStation().toString())){
-               count = false;
-           }
-           if(count){
-               totalStationBtw++;
-           }
-       }
-       ticket.setTotalFare(totalStationBtw*300*bookTicketEntryDto.getNoOfSeats());
+       ticket.setTotalFare((end-start)*300*bookTicketEntryDto.getNoOfSeats());
 
        train.getBookedTickets().add(ticket);
        //# set no of set in train#;
