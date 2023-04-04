@@ -23,7 +23,7 @@ public class Passenger {
 
     private int age;
 
-    //passengers and tickets are many to manny
+    //passengers and tickets are many to many
 
     public Passenger() {
     }
